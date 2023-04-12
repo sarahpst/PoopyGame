@@ -1,0 +1,60 @@
+body {
+  font-family: "Verdana";
+  padding: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.screen {
+  width: 500px;
+  height: 500px;
+  display: none;
+  /* border: 1px solid rgb(72, 72, 72); */
+  /* border-radius: 3px; */
+}
+
+.screen > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+#screen1 #start-game {
+  font-size: 30px;
+  background-color: #870007;
+  color: #fff;
+  padding: 20px 40px;
+  border: 0;
+  box-shadow: 0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.logo-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  object-position: 100% 0;
+  background: center -52px no-repeat url();
+  background-size: 600px;
+}
+
+div.content {
+  font-size: 18px;
+  padding: 20px;
+}
+
+#playerChoice-Btn {
+  font-size: 300px;
+  padding: 20px 40px;
+  border: 0;
+  box-shadow: 0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
