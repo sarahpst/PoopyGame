@@ -172,11 +172,9 @@ window.onload = () => {
 
     requestAnimationFrame(startGame);
 
-    // requestAnimationFrame(animate);
+   
   };
-  //   const startGame = () => {
-  //     animate();
-  //   };
+  
   // background
   const drawEntireBackground = () => {
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height); // background Img
@@ -230,16 +228,6 @@ window.onload = () => {
 //     document.getElementById("select-cat") ,
 //   ];
 
-// console.log("rentre dans ma fonction");
-// if (choicebtn[0].onclick === 0) {
-//   let myPlayer = new player(arrayPlayer[0].imgName);
-//   console.log("chat");
-//   myPlayer.drawImage();
-// } else {
-//   let myPlayer = new player(arrayPlayer[1].imgName);
-//   console.log("chat");
-//   myPlayer.drawImage();
-// }
 
 //3e ecran :
 //ENNEMY
@@ -254,9 +242,7 @@ window.onload = () => {
 //collission with player
 //collission with object
 
-//FOOD
-//mvmnt
-//collission food
+
 
 //POOPZONE
 //gameOver
