@@ -6,8 +6,11 @@ const screen3 = document.querySelector("#screen3");
 
 const input = document.getElementById("name");
 let intervalTimer;
-let time = 15;
+let intervalEnnemies;
+let time = 60;
 let myPlayer;
+let myFoods;
+let myEnnemies;
 let inputValue;
 
 let arrayBloc = [
@@ -31,35 +34,72 @@ let arrayBloc = [
 
 let arrayPlayer = [
   {
-    imgPlayerName: "panda-spritesheet-16x16",
+    type: "panda",
+    imgPlayerName: "panda.png",
   },
   {
-    imgPlayerName: "cat-spritesheet-16x16",
+    type: "cat",
+    imgPlayerName: "cat.png",
   },
 ];
 
 let arrayFood = [
   {
-    imgfoodName: "bamboo.png",
     posX: Math.floor(Math.random() * (canvas.width - 50)),
-    posY: arrayBloc[0].posY - 30,
+    posY: arrayBloc[0].posY - 40,
   },
   {
-    imgfoodName: "bamboo.png",
     posX: Math.floor(Math.random() * (canvas.width - 50)),
-    posY: arrayBloc[2].posY - 30,
+    posY: arrayBloc[0].posY - 40,
   },
   {
-    imgfoodName: "catFood.png",
     posX: Math.floor(Math.random() * (canvas.width - 50)),
-    posY: arrayBloc[3].posY - 30,
+    posY: arrayBloc[2].posY - 40,
+  },
+  {
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: arrayBloc[2].posY - 40,
+  },
+  {
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: arrayBloc[3].posY - 40,
+  },
+  {
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: arrayBloc[3].posY - 40,
   },
 ];
 
 let arrayEnnemy = [{
-  posX: Math.floor(Math.random() * (canvas.width - 50)),
-  posY: arrayBloc[0].posY - 30,
-}
+  ennemyPos: "leftHalf",
+  posX: Math.floor(Math.random() * ((450 - 50) - 0) + 0),
+  posY: arrayBloc[0].posY - 40,
+},
+{
+  ennemyPos: "leftHalf",
+  posX: Math.floor(Math.random() * ((450 - 50) - 0) + 0),
+  posY: arrayBloc[2].posY - 40,
+},
+{
+  ennemyPos: "leftHalf",
+  posX: Math.floor(Math.random() * ((450 - 50) - 0) + 0),
+  posY: arrayBloc[3].posY - 40,
+},
+{
+  ennemyPos: "rightHalf",
+  posX: Math.floor(Math.random() * ((canvas.width - 50) - 400) + 400),
+  posY: arrayBloc[0].posY - 40,
+},
+{
+  ennemyPos: "rightHalf",
+  posX: Math.floor(Math.random() * ((canvas.width - 50) - 400) + 400),
+  posY: arrayBloc[2].posY - 40,
+},
+{
+  ennemyPos: "rightHalf",
+  posX: Math.floor(Math.random() * ((canvas.width - 50) - 400) + 400),
+  posY: arrayBloc[3].posY - 40,
+},
 ]
 
 class bloc {
@@ -82,33 +122,29 @@ class bloc {
 
 class player {
   constructor(type, imgPlayerName) {
+    this.type = type;
     const imgPlayer = new Image();
-    imgPlayer.src = `images/${type}/${imgPlayerName}.png`;
-    this.imgPlayerName = imgPlayerName
-    this.type = type
+    imgPlayer.src = "images/" + imgPlayerName;
     this.imgPlayer = imgPlayer;
+    this.imgPlayerName = imgPlayerName;
     this.width = 50;
     this.height = 50;
     this.posX = canvas.width / 2;
-    this.posY = canvas.height - 100 /*hauteur trottoir*/ - this.height;
+    this.posY = canvas.height - 100 - this.height -10;
     this.score = 0;
-    this.arrayPoop = []
-    this.stomach = 0
-    this.gamefinished = false
-    this.spriteXIndex = 0
-    this.spriteYIndex = 0
-    this.naturalWidth = 48
-    this.naturalHeight = 48
+    this.arrayPoop = [];
+    this.stomach = 0;
+    this.gamefinished = false;
+    this.spriteXIndex = 1;
+    this.spriteYIndex = 0;
+    this.naturalWidth = 32;
+    this.naturalHeight = 32;
 
   }
 
   goLeft = () => {
-    const imgPlayer = new Image();
-    imgPlayer.src = `images/${this.type}/${this.imgPlayerName}.png`;
-    this.imgPlayer = imgPlayer;
-
     this.posX -= 10;
-    this.spriteYIndex = 4
+    this.spriteYIndex = 1
 
     this.spriteXIndex++
     if (this.spriteXIndex > 2) {
@@ -117,13 +153,9 @@ class player {
   }
 
   goRight = () => {
-    const imgPlayer = new Image();
-    imgPlayer.src = `images/${this.type}/${this.imgPlayerName}-r.png`;
-    this.imgPlayer = imgPlayer;
-
     this.posX += 10;
-    this.spriteYIndex = 4
-    this.spriteXIndex++
+    this.spriteYIndex = 2;
+    this.spriteXIndex++;
     if (this.spriteXIndex > 2) {
       this.spriteXIndex = 0
     }
@@ -131,12 +163,18 @@ class player {
 
   goUp = () => {
     this.posY -= 120;
-    this.spriteYIndex = 2
-    this.spriteXIndex++
-    if (this.spriteXIndex > 2) {
-      this.spriteXIndex = 0
-    }
+    this.spriteYIndex = 3;
+    this.spriteXIndex = 1;
 
+    setTimeout(() => {
+      this.spriteYIndex = 0
+    }, 200)
+  }
+
+  goDown = () => {
+    this.posY += 120;
+    this.spriteYIndex = 0;
+    this.spriteXIndex = 1;
   }
 
   drawImage = () => {
@@ -149,7 +187,7 @@ class player {
       this.posX,
       this.posY,
       this.width,
-      this.height
+      this.height,
     )
     ctx.restore()
     ctx.fill();
@@ -204,15 +242,15 @@ class player {
   drawPoop = () => {
     this.arrayPoop.forEach((element) => {
       ctx.drawImage(element.imgPoop, element.poopPosX, element.poopPosY, element.poopWidth, element.poopHeight)
-      ctx.fill()
+      ctx.fill();
     })
 
   }
 
   win = () => {
-    this.gamefinished = true
+    this.gamefinished = true;
     clearInterval(intervalTimer);
-
+    clearInterval(intervalEnnemies);
     ctx.font = "40px Arial";
     ctx.fillStyle = "red";
     ctx.fillText(
@@ -225,8 +263,9 @@ class player {
   }
 
   gameOver = () => {
-    this.gamefinished = true
-    clearInterval(intervalTimer)
+    this.gamefinished = true;
+    clearInterval(intervalTimer);
+    clearInterval(intervalEnnemies);
 
     ctx.font = "40px Arial";
     ctx.fillStyle = "red";
@@ -240,7 +279,14 @@ class player {
 }
 
 class food {
-  constructor(imgfoodName, posX, posY) {
+  constructor(posX, posY) {
+    let imgfoodName;
+    if (myPlayer.type === "cat") {
+      imgfoodName = "catFood.png"
+    }
+    else if (myPlayer.type === "panda") {
+      imgfoodName = "bamboo.png"
+    }
     const imgFood = new Image();
     imgFood.src = "images/" + imgfoodName;
     this.img = imgFood;
@@ -266,21 +312,68 @@ class poop {
     this.poopPosY = myPlayer.posY + myPlayer.height - this.poopHeight - 10;
   }
 }
+
 class ennemy {
-  constructor(posX, posY) {
+  constructor(ennemyPos, posX, posY) {
+    let imgSrc;
+
+    if (myPlayer.type === "cat") {
+      imgSrc = "cat-ennemy.png"
+    }
+    else if (myPlayer.type === "panda") {
+      imgSrc = "panda-ennemy.png"
+    }
+
     const imgEnnemy = new Image();
-    imgEnnemy.src = "images/poopBasic.png"
+    imgEnnemy.src = "images/" + imgSrc
     this.img = imgEnnemy;
+    this.spriteXIndex = 0;
+    this.spriteYIndex = 0;
+    this.naturalWidth = 32;
+    this.naturalHeight = 32;
     this.width = 50;
     this.height = 50;
     this.posX = posX;
     this.posY = posY;
+    this.direction = "left";
+    this.ennemyPos = ennemyPos
+  }
+
+  goLeft = () => {
+    this.posX -= 10;
+    this.spriteYIndex = 1
+    this.spriteXIndex++
+    if (this.spriteXIndex > 2) {
+      this.spriteXIndex = 0
+    }
+  }
+
+  goRight = () => {
+    this.posX += 10;
+    this.spriteYIndex = 2;
+    this.spriteXIndex++;
+    if (this.spriteXIndex > 2) {
+      this.spriteXIndex = 0
+    }
   }
 
   drawImage = () => {
-    ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
+    ctx.drawImage(
+      this.img,
+      this.naturalWidth * this.spriteXIndex,
+      this.naturalHeight * this.spriteYIndex,
+      this.naturalWidth,
+      this.naturalHeight,
+      this.posX,
+      this.posY,
+      this.width,
+      this.height,
+    )
+    ctx.restore()
     ctx.fill();
+
   };
+
 
   killPlayer = () => {
     if (this.posY === myPlayer.posY) {
@@ -292,18 +385,46 @@ class ennemy {
       }
     }
   }
-}
 
+
+  move = () => {
+    if (this.ennemyPos === "leftHalf") {
+      if (this.direction === "left") {
+        if (this.posX > 0) {
+          this.goLeft()
+        }
+        else { this.direction = "right" }
+      }
+      if (this.direction === "right") {
+        if (this.posX < canvas.width / 2 - this.width) {
+          this.goRight();
+        }
+        else { this.direction = "left" }
+      }
+    }
+
+    else if (this.ennemyPos === "rightHalf") {
+      if (this.direction === "left") {
+        if (this.posX > canvas.width / 2) {
+          this.goLeft();
+        }
+        else { this.direction = "right" }
+      }
+      if (this.direction === "right") {
+        if (this.posX < canvas.width - this.width) {
+          this.goRight();
+        }
+        else { this.direction = "left" }
+      }
+    }
+  }
+
+
+}
 
 const bgImg = new Image();
 bgImg.src = "images/background/background.png";
 
-let myFoods = arrayFood.map((element) => {
-  return new food(element.imgfoodName, element.posX, element.posY);
-});
-let myEnnemies = arrayEnnemy.map((element) => {
-  return new ennemy(element.posX, element.posY)
-});
 
 // FIRST SCREEN
 
@@ -328,14 +449,30 @@ window.onload = () => {
 
   document.getElementById("btn-panda").onclick = () => {
     console.log("panda")
-    myPlayer = new player("panda", arrayPlayer[0].imgPlayerName);
+
+    myPlayer = new player(arrayPlayer[0].type, arrayPlayer[0].imgPlayerName);
+
+    myFoods = arrayFood.map((element) => {
+      return new food(element.posX, element.posY);
+    });
+    myEnnemies = arrayEnnemy.map((element) => {
+      return new ennemy(element.ennemyPos, element.posX, element.posY)
+    });
 
   }
 
   document.getElementById("btn-cat").onclick = () => {
     console.log("cat")
-    myPlayer = new player("cat", arrayPlayer[1].imgPlayerName);
+    myPlayer = new player(arrayPlayer[1].type, arrayPlayer[1].imgPlayerName);
+    myFoods = arrayFood.map((element) => {
+      return new food(element.posX, element.posY);
+    });
+    myEnnemies = arrayEnnemy.map((element) => {
+      return new ennemy(element.ennemyPos, element.posX, element.posY)
+    });
   }
+
+
 
   //CANVAS
   const startGame = () => {
@@ -346,13 +483,17 @@ window.onload = () => {
       }
     };
     intervalTimer = setInterval(updateTime, 1000);
+    intervalEnnemies = setInterval(() => {
+      myEnnemies.map((element) => { element.move() });
+
+    }, 200);
   }
 
   const animate = () => {
     drawEntireBackground();
     drawPlayer();
     drawFood();
-    drawEnnemy()
+    drawEnnemy();
     drawTimer();
     ctx.fillText("Name : " + inputValue, 650, 30);
     requestAnimationFrame(animate);
@@ -394,16 +535,16 @@ window.onload = () => {
         myPlayer.posX < canvas.width - myPlayer.width
       ) {
         myPlayer.goRight()
-      } else if (e.key === "ArrowUp" && myPlayer.posY >= 240 - myPlayer.height) {
+      } else if (e.key === "ArrowUp" && myPlayer.posY >= 240 - myPlayer.height -10) {
         myPlayer.goUp()
       } else if (
         e.key === "ArrowDown" &&
-        myPlayer.posY < canvas.height - 100 - myPlayer.height
+        myPlayer.posY < canvas.height - 100 - myPlayer.height-10
       ) {
-        myPlayer.posY += 120;
+        myPlayer.goDown()
       } else if (
         e.key === " " &&
-        myPlayer.posY === 310
+        myPlayer.posY === 310-10
       ) {
         myPlayer.doPoop();
       }
@@ -426,41 +567,12 @@ window.onload = () => {
   const drawEnnemy = () => {
     myEnnemies.forEach((element) => {
       element.drawImage();
-      element.killPlayer()
+      element.killPlayer();
+
     });
   }
 };
 
 
-//   gameOver = () => {
-//     ctx.fillText(
-//       `You Loose !! Score:${this.score}`,
-//       canvas.width - 650,
-//       canvas.height / 2
-//     );
-//     ctx.fill();
 
-// //   const choicebtn = [
-//      ,
-//     document.getElementById("select-cat") ,
-//   ];
 
-//3e ecran :
-//ENNEMY
-//class
-// class ennemy {
-//   constructor(hauteur, largeur) {
-//     this.hauteur = hauteur;
-//     this.largeur = largeur;
-//   }
-// }
-//mvmnt
-//collission with player
-//collission with object
-
-//POOPZONE
-//gameOver
-//Win
-//time
-//score/food level
-//poop level
