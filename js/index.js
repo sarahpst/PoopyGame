@@ -12,6 +12,13 @@ let myPlayer;
 let myFoods;
 let myEnnemies;
 let inputValue;
+const poopZoneImg = new Image();
+poopZoneImg.src = "./images/poopBasic.png";
+
+const skullImg = new Image();
+skullImg.src = "./images/skull.png";
+
+
 
 let arrayBloc = [
   {
@@ -130,7 +137,7 @@ class player {
     this.width = 50;
     this.height = 50;
     this.posX = canvas.width / 2;
-    this.posY = canvas.height - 100 - this.height -10;
+    this.posY = canvas.height - 100 - this.height - 10;
     this.score = 0;
     this.arrayPoop = [];
     this.stomach = 0;
@@ -419,8 +426,107 @@ class ennemy {
     }
   }
 
-
 }
+
+let poopZoneArray = [
+  {
+    poopZoneImg,
+    posX: 40,
+    posY: canvas.height - 360 - 10,
+    width: 10,
+    height: 10,
+  },
+  {
+    poopZoneImg,
+    posX: 30,
+    posY: canvas.height - 360 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    poopZoneImg,
+    posX: 50,
+    posY: canvas.height - 360 - 40,
+    width: 40,
+    height: 40,
+  },
+]
+
+let skullArray = [
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 240 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 240 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 240 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 480 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 480 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 480 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 600 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 600 - 20,
+    width: 20,
+    height: 20,
+  },
+  {
+    skullImg,
+    posX: Math.floor(Math.random() * (canvas.width - 50)),
+    posY: canvas.height - 600 - 20,
+    width: 20,
+    height: 20,
+  },
+]
+
+
+
+
+
+
+
+
+const signPoopZoneImg = new Image();
+signPoopZoneImg.src = "./images/sign.png";
 
 const bgImg = new Image();
 bgImg.src = "images/background/background.png";
@@ -503,6 +609,10 @@ window.onload = () => {
   const drawEntireBackground = () => {
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height); // background Img
     drawBloc(); // blocsniv
+    drawPoopZone();
+    drawSkull();
+    ctx.drawImage(signPoopZoneImg, 20, canvas.height - 360 - 75, 60, 80)
+
     ctx.fill();
   };
 
@@ -513,6 +623,20 @@ window.onload = () => {
       myBloc.drawImage();
     });
   };
+
+  const drawPoopZone = () => {
+    poopZoneArray.forEach((element) => {
+      ctx.drawImage(element.poopZoneImg, element.posX, element.posY, element.width, element.height)
+      ctx.fill()
+    });
+  }
+
+  const drawSkull = () => {
+    skullArray.forEach((element) => {
+      ctx.drawImage(element.skullImg, element.posX, element.posY, element.width, element.height)
+      ctx.fill()
+    });
+  }
 
   const drawPlayer = () => {
     myPlayer.drawScore();
@@ -535,16 +659,16 @@ window.onload = () => {
         myPlayer.posX < canvas.width - myPlayer.width
       ) {
         myPlayer.goRight()
-      } else if (e.key === "ArrowUp" && myPlayer.posY >= 240 - myPlayer.height -10) {
+      } else if (e.key === "ArrowUp" && myPlayer.posY >= 240 - myPlayer.height - 10) {
         myPlayer.goUp()
       } else if (
         e.key === "ArrowDown" &&
-        myPlayer.posY < canvas.height - 100 - myPlayer.height-10
+        myPlayer.posY < canvas.height - 100 - myPlayer.height - 10
       ) {
         myPlayer.goDown()
       } else if (
         e.key === " " &&
-        myPlayer.posY === 310-10
+        myPlayer.posY === 310 - 10
       ) {
         myPlayer.doPoop();
       }
