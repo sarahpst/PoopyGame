@@ -65,7 +65,7 @@ let arrayEnnemy = [{
 class bloc {
   constructor(imgName, posY) {
     const blocImg = new Image();
-    blocImg.src = "../images/background/" + imgName;
+    blocImg.src = "images/background/" + imgName;
 
     this.img = blocImg;
     this.posX = 0;
@@ -83,7 +83,7 @@ class bloc {
 class player {
   constructor(type, imgPlayerName) {
     const imgPlayer = new Image();
-    imgPlayer.src = `../images/${type}/${imgPlayerName}.png`;
+    imgPlayer.src = `images/${type}/${imgPlayerName}.png`;
     this.imgPlayerName = imgPlayerName
     this.type = type
     this.imgPlayer = imgPlayer;
@@ -104,7 +104,7 @@ class player {
 
   goLeft = () => {
     const imgPlayer = new Image();
-    imgPlayer.src = `../images/${this.type}/${this.imgPlayerName}.png`;
+    imgPlayer.src = `images/${this.type}/${this.imgPlayerName}.png`;
     this.imgPlayer = imgPlayer;
 
     this.posX -= 10;
@@ -118,7 +118,7 @@ class player {
 
   goRight = () => {
     const imgPlayer = new Image();
-    imgPlayer.src = `../images/${this.type}/${this.imgPlayerName}-r.png`;
+    imgPlayer.src = `images/${this.type}/${this.imgPlayerName}-r.png`;
     this.imgPlayer = imgPlayer;
 
     this.posX += 10;
@@ -242,7 +242,7 @@ class player {
 class food {
   constructor(imgfoodName, posX, posY) {
     const imgFood = new Image();
-    imgFood.src = "../images/" + imgfoodName;
+    imgFood.src = "images/" + imgfoodName;
     this.img = imgFood;
     this.width = 50;
     this.height = 50;
@@ -258,7 +258,7 @@ class food {
 class poop {
   constructor(posX) {
     let imgPoop = new Image();
-    imgPoop.src = "../images/poopSmile.png";
+    imgPoop.src = "images/poopSmile.png";
     this.imgPoop = imgPoop;
     this.poopWidth = 20;
     this.poopHeight = 20;
@@ -269,7 +269,7 @@ class poop {
 class ennemy {
   constructor(posX, posY) {
     const imgEnnemy = new Image();
-    imgEnnemy.src = "../images/poopBasic.png"
+    imgEnnemy.src = "images/poopBasic.png"
     this.img = imgEnnemy;
     this.width = 50;
     this.height = 50;
@@ -296,7 +296,7 @@ class ennemy {
 
 
 const bgImg = new Image();
-bgImg.src = "../images/background/background.png";
+bgImg.src = "images/background/background.png";
 
 let myFoods = arrayFood.map((element) => {
   return new food(element.imgfoodName, element.posX, element.posY);
