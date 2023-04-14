@@ -5,47 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="style/style.css" />
-    <title>GAME</title>
+    <title>Poopy game</title>
   </head>
   <body>
     <div id="screen1" class="screen">
       <div>
-        <div class="logo-img"></div>
+        <div class="bg-cat"></div>
+        <img src="./images/poopSmile.png" width="40" />
+        <h1>Poopy game</h1>
         <br />
-        <button id="start-game">Start game</button>
-        <div type="button" class="content">
-          Your pet needs you to grow up. You have 5 minutes to eat all the food
-          you find, don't forget to poop in the POOPZONE, else you'll explode!
+        <button type="button" id="start-game" class="btn-next">
+          Start game
+        </button>
+        <div class="content">
+          Your pet needs you to grow up. You have <b>1 minute</b> to eat all the food
+          you find. <br /><b>Don't forget to poop in the POOPZONE</b>, else you'll explode!
           Also be careful enemies are everywhere, if they touch you you'll die.
         </div>
+
       </div>
     </div>
 
     <div id="screen2" class="screen">
       <div>
-        <h1>Choose your animal</h1>
+        <div class="bg-cat"></div>
+        <h1>New player</h1>
         <div>
-          <button id="btn-panda">
+          <button type="button" id="btn-panda" class="btn-animal">
             <img src="./images/pandaBtn.png" />
           </button>
-          <button id="btn-cat">
+          <button type="button" id="btn-cat" class="btn-animal">
             <img src="./images/catBtn.png" />
           </button>
         </div>
         <div>
-          <input id="name" name="name" placeholder="ENTER YOUR NAME" />
-          <button id="submit-player">START</button>
+          <input id="name" name="name" placeholder="Enter your name" />
+        </div>
+        <div>
+          <button type="button" id="submit-player" class="btn-next">
+            START
+          </button>
         </div>
       </div>
     </div>
 
     <div id="screen3" class="screen">
       <div>
-      <canvas id="canvas" width="900" height="700"></canvas>
+        <div class="p-relative">
+          <canvas id="canvas" width="900" height="700"></canvas>
+          <div class="infoGame">
+            <div>Time left: <span class="time">45 secondes</span></div>
+            <div>Score: <span class="score">0</span></div>
+            <div>Stomach: <span class="stomach">0</span>/2</div>
+            <div id="need-poop">
+              <img src="./images/poopBasic.png" width="26" /> Go to the poopzone now!
+            </div>
+          </div>
+          <div class="guidelines">
+            <div class="guidelines-item">
+              <img src="./images/keyboard/arrows.png" width="48" />
+              <div>to go left, right, up and down.</div>
+            </div>
+            <div class="guidelines-item">
+              <img src="./images/keyboard/space.png" width="48" />
+              <div>to poop in the poopzone after eating.</div>
+            </div>
+          </div>
+        </div>
+        <div class="info-center">
+          <div id="win">
+            <h1>Congratulation <span id="name-final"></span>!</h1>
+            <p class="content">
+              Your score: <span id="score">32</span>.
+            </p>
+          </div>
+          <div id="game-over">
+            <h1>GAMEOVER</h1>
+            <p>Sorry <span class="name">name,</span> you need to try again</p>
+          </div>
 
-      <!-- <div class="game"></div> -->
+          <button type="button" id="btn-try-again" class="btn-next">
+            START AGAIN
+          </button>
+        </div>
       </div>
-    </div>
 
       <!-- <div class="text">
         <p class="cat-intro">
@@ -66,6 +109,8 @@
         </p>
       </div> -->
     </div>
+
+    <div class="bg-cat"></div>
     <script type="text/javascript" src="js/index.js"></script>
   </body>
 </html>

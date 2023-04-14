@@ -3,11 +3,23 @@ const ctx = canvas.getContext("2d");
 const screen1 = document.querySelector("#screen1");
 const screen2 = document.querySelector("#screen2");
 const screen3 = document.querySelector("#screen3");
-
+const infoCenter = document.querySelector(".info-center");
 const input = document.getElementById("name");
+
+let sound_bg = new Audio(`./sounds/bg.mp3`);
+
+const playSoundButton = (name) => {
+  let sound_button = new Audio(`./sounds/${name}.mp3`);
+  sound_button.pause();
+  sound_button.currentTime = 0;
+  sound_button.play()
+}
+
+let animationFrame;
 let intervalTimer;
 let intervalEnnemies;
 let time = 60;
+let myBlocs;
 let myPlayer;
 let myFoods;
 let myEnnemies;
@@ -17,8 +29,6 @@ poopZoneImg.src = "./images/poopBasic.png";
 
 const skullImg = new Image();
 skullImg.src = "./images/skull.png";
-
-
 
 let arrayBloc = [
   {
@@ -109,324 +119,6 @@ let arrayEnnemy = [{
 },
 ]
 
-class bloc {
-  constructor(imgName, posY) {
-    const blocImg = new Image();
-    blocImg.src = "images/background/" + imgName;
-
-    this.img = blocImg;
-    this.posX = 0;
-    this.posY = posY;
-    this.width = canvas.width;
-    this.height = 20;
-  }
-
-  drawImage = () => {
-    ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
-    ctx.fill();
-  };
-}
-
-class player {
-  constructor(type, imgPlayerName) {
-    this.type = type;
-    const imgPlayer = new Image();
-    imgPlayer.src = "images/" + imgPlayerName;
-    this.imgPlayer = imgPlayer;
-    this.imgPlayerName = imgPlayerName;
-    this.width = 50;
-    this.height = 50;
-    this.posX = canvas.width / 2;
-    this.posY = canvas.height - 100 - this.height - 10;
-    this.score = 0;
-    this.arrayPoop = [];
-    this.stomach = 0;
-    this.gamefinished = false;
-    this.spriteXIndex = 1;
-    this.spriteYIndex = 0;
-    this.naturalWidth = 32;
-    this.naturalHeight = 32;
-
-  }
-
-  goLeft = () => {
-    this.posX -= 10;
-    this.spriteYIndex = 1
-
-    this.spriteXIndex++
-    if (this.spriteXIndex > 2) {
-      this.spriteXIndex = 0
-    }
-  }
-
-  goRight = () => {
-    this.posX += 10;
-    this.spriteYIndex = 2;
-    this.spriteXIndex++;
-    if (this.spriteXIndex > 2) {
-      this.spriteXIndex = 0
-    }
-  }
-
-  goUp = () => {
-    this.posY -= 120;
-    this.spriteYIndex = 3;
-    this.spriteXIndex = 1;
-
-    setTimeout(() => {
-      this.spriteYIndex = 0
-    }, 200)
-  }
-
-  goDown = () => {
-    this.posY += 120;
-    this.spriteYIndex = 0;
-    this.spriteXIndex = 1;
-  }
-
-  drawImage = () => {
-    ctx.drawImage(
-      this.imgPlayer,
-      this.naturalWidth * this.spriteXIndex,
-      this.naturalHeight * this.spriteYIndex,
-      this.naturalWidth,
-      this.naturalHeight,
-      this.posX,
-      this.posY,
-      this.width,
-      this.height,
-    )
-    ctx.restore()
-    ctx.fill();
-
-  };
-  drawScore = () => {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Score: " + this.score, 8, 60);
-    ctx.fill();
-  };
-
-  eatFood = () => {
-    myFoods.map((element, index) => {
-      if (element.posY === myPlayer.posY) {
-        if (
-          element.posX + element.width >= myPlayer.posX &&
-          element.posX <= myPlayer.posX + myPlayer.width
-        ) {
-          this.score += 1;
-          this.stomach += 1;
-          console.log(this.stomach)
-          myFoods.splice(index, 1);
-
-        }
-      }
-    });
-    if (this.stomach === 3) {
-      this.gameOver();
-    }
-    else if (myFoods.length === 0) {
-      this.win()
-    }
-  };
-
-  drawStomach = () => {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Stomach storage : " + this.stomach, 8, 90);
-    ctx.fill();
-  };
-
-  doPoop = () => {
-    if (this.stomach > 0) {
-      let myPoop = new poop(this.posX)
-      this.arrayPoop.push(myPoop)
-      this.stomach = 0
-    }
-
-  }
-
-  drawPoop = () => {
-    this.arrayPoop.forEach((element) => {
-      ctx.drawImage(element.imgPoop, element.poopPosX, element.poopPosY, element.poopWidth, element.poopHeight)
-      ctx.fill();
-    })
-
-  }
-
-  win = () => {
-    this.gamefinished = true;
-    clearInterval(intervalTimer);
-    clearInterval(intervalEnnemies);
-    ctx.font = "40px Arial";
-    ctx.fillStyle = "red";
-    ctx.fillText(
-      `Congrats, you won !! Score:${this.score}`,
-      canvas.width - 700,
-      canvas.height / 2 - 50
-    );
-    ctx.fill();
-
-  }
-
-  gameOver = () => {
-    this.gamefinished = true;
-    clearInterval(intervalTimer);
-    clearInterval(intervalEnnemies);
-
-    ctx.font = "40px Arial";
-    ctx.fillStyle = "red";
-    ctx.fillText(
-      `you lose! Score:${myPlayer.score}`,
-      canvas.width - 650,
-      canvas.height / 2
-    );
-    ctx.fill();
-  };
-}
-
-class food {
-  constructor(posX, posY) {
-    let imgfoodName;
-    if (myPlayer.type === "cat") {
-      imgfoodName = "catFood.png"
-    }
-    else if (myPlayer.type === "panda") {
-      imgfoodName = "bamboo.png"
-    }
-    const imgFood = new Image();
-    imgFood.src = "images/" + imgfoodName;
-    this.img = imgFood;
-    this.width = 50;
-    this.height = 50;
-    this.posX = posX;
-    this.posY = posY;
-  }
-  drawImage = () => {
-    ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
-    ctx.fill();
-  };
-}
-
-class poop {
-  constructor(posX) {
-    let imgPoop = new Image();
-    imgPoop.src = "images/poopSmile.png";
-    this.imgPoop = imgPoop;
-    this.poopWidth = 20;
-    this.poopHeight = 20;
-    this.poopPosX = posX;
-    this.poopPosY = myPlayer.posY + myPlayer.height - this.poopHeight - 10;
-  }
-}
-
-class ennemy {
-  constructor(ennemyPos, posX, posY) {
-    let imgSrc;
-
-    if (myPlayer.type === "cat") {
-      imgSrc = "cat-ennemy.png"
-    }
-    else if (myPlayer.type === "panda") {
-      imgSrc = "panda-ennemy.png"
-    }
-
-    const imgEnnemy = new Image();
-    imgEnnemy.src = "images/" + imgSrc
-    this.img = imgEnnemy;
-    this.spriteXIndex = 0;
-    this.spriteYIndex = 0;
-    this.naturalWidth = 32;
-    this.naturalHeight = 32;
-    this.width = 50;
-    this.height = 50;
-    this.posX = posX;
-    this.posY = posY;
-    this.direction = "left";
-    this.ennemyPos = ennemyPos
-  }
-
-  goLeft = () => {
-    this.posX -= 10;
-    this.spriteYIndex = 1
-    this.spriteXIndex++
-    if (this.spriteXIndex > 2) {
-      this.spriteXIndex = 0
-    }
-  }
-
-  goRight = () => {
-    this.posX += 10;
-    this.spriteYIndex = 2;
-    this.spriteXIndex++;
-    if (this.spriteXIndex > 2) {
-      this.spriteXIndex = 0
-    }
-  }
-
-  drawImage = () => {
-    ctx.drawImage(
-      this.img,
-      this.naturalWidth * this.spriteXIndex,
-      this.naturalHeight * this.spriteYIndex,
-      this.naturalWidth,
-      this.naturalHeight,
-      this.posX,
-      this.posY,
-      this.width,
-      this.height,
-    )
-    ctx.restore()
-    ctx.fill();
-
-  };
-
-
-  killPlayer = () => {
-    if (this.posY === myPlayer.posY) {
-      if (
-        this.posX + this.width >= myPlayer.posX &&
-        this.posX <= myPlayer.posX + myPlayer.width
-      ) {
-        myPlayer.gameOver();
-      }
-    }
-  }
-
-
-  move = () => {
-    if (this.ennemyPos === "leftHalf") {
-      if (this.direction === "left") {
-        if (this.posX > 0) {
-          this.goLeft()
-        }
-        else { this.direction = "right" }
-      }
-      if (this.direction === "right") {
-        if (this.posX < canvas.width / 2 - this.width) {
-          this.goRight();
-        }
-        else { this.direction = "left" }
-      }
-    }
-
-    else if (this.ennemyPos === "rightHalf") {
-      if (this.direction === "left") {
-        if (this.posX > canvas.width / 2) {
-          this.goLeft();
-        }
-        else { this.direction = "right" }
-      }
-      if (this.direction === "right") {
-        if (this.posX < canvas.width - this.width) {
-          this.goRight();
-        }
-        else { this.direction = "left" }
-      }
-    }
-  }
-
-}
 
 let poopZoneArray = [
   {
@@ -518,11 +210,324 @@ let skullArray = [
   },
 ]
 
+class bloc {
+  constructor(imgName, posY) {
+    const blocImg = new Image();
+    blocImg.src = "images/background/" + imgName;
+
+    this.img = blocImg;
+    this.posX = 0;
+    this.posY = posY;
+    this.width = canvas.width;
+    this.height = 20;
+  }
+
+  drawImage = () => {
+    ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
+    ctx.fill();
+  };
+}
+
+class player {
+  constructor(type, imgPlayerName) {
+    this.type = type;
+    const imgPlayer = new Image();
+    imgPlayer.src = "images/" + imgPlayerName;
+    this.imgPlayer = imgPlayer;
+    this.imgPlayerName = imgPlayerName;
+    this.width = 50;
+    this.height = 50;
+    this.posX = canvas.width / 2;
+    this.posY = canvas.height - 100 - this.height - 10;
+    this.score = 0;
+    this.arrayPoop = [];
+    this.stomach = 0;
+    this.gamefinished = false;
+    this.spriteXIndex = 1;
+    this.spriteYIndex = 0;
+    this.naturalWidth = 32;
+    this.naturalHeight = 32;
+
+  }
+
+  goLeft = () => {
+    this.posX -= 10;
+    this.spriteYIndex = 1
+
+    this.spriteXIndex++
+    if (this.spriteXIndex > 2) {
+      this.spriteXIndex = 0
+    }
+  }
+
+  goRight = () => {
+    this.posX += 10;
+    this.spriteYIndex = 2;
+    this.spriteXIndex++;
+    if (this.spriteXIndex > 2) {
+      this.spriteXIndex = 0
+    }
+  }
+
+  goUp = () => {
+    this.posY -= 120;
+    this.spriteYIndex = 3;
+    this.spriteXIndex = 1;
+    playSoundButton("jump")
+    setTimeout(() => {
+      this.spriteYIndex = 0
+    }, 200)
+  }
+
+  goDown = () => {
+    this.posY += 120;
+    this.spriteYIndex = 0;
+    this.spriteXIndex = 1;
+  }
+
+  drawImage = () => {
+    ctx.drawImage(
+      this.imgPlayer,
+      this.naturalWidth * this.spriteXIndex,
+      this.naturalHeight * this.spriteYIndex,
+      this.naturalWidth,
+      this.naturalHeight,
+      this.posX,
+      this.posY,
+      this.width,
+      this.height,
+    )
+    ctx.restore()
+    ctx.fill();
+
+  };
+  drawScore = () => {
+    document.querySelector(".score").innerHTML = this.score
+  };
+
+  eatFood = () => {
+    myFoods.map((element, index) => {
+      if (element.posY === myPlayer.posY) {
+        if (
+          element.posX + element.width >= myPlayer.posX &&
+          element.posX <= myPlayer.posX + myPlayer.width
+        ) {
+          playSoundButton("eating")
+          this.score += 1;
+          this.stomach += 1;
+          myFoods.splice(index, 1);
+        }
+      }
+    });
+    if (this.stomach === 3) {
+      this.gameOver();
+    }
+    else if (myFoods.length === 0) {
+      this.win()
+    }
+  };
+
+  drawStomach = () => {
+    document.querySelector(".stomach").innerHTML = this.stomach
+    if (this.stomach == 2) {
+      document.querySelector("#need-poop").style.display = "block"
+    }
+    else {
+      document.querySelector("#need-poop").style.display = "none"
+    }
+  };
+
+  doPoop = () => {
+    if (this.stomach > 0) {
+      playSoundButton("poop")
+      let myPoop = new poop(this.posX)
+      this.arrayPoop.push(myPoop)
+      this.stomach = 0
+    }
+
+  }
+
+  drawPoop = () => {
+    this.arrayPoop.forEach((element) => {
+      ctx.drawImage(element.imgPoop, element.poopPosX, element.poopPosY, element.poopWidth, element.poopHeight)
+      ctx.fill();
+    })
+  }
+
+  win = () => {
+    sound_bg.pause();
+    if(!this.gamefinished){
+      playSoundButton("win")
+    }
+    this.gamefinished = true;
+    clearInterval(intervalTimer);
+    clearInterval(intervalEnnemies);
+
+    document.querySelector(".info-center").style.display = "block"
+    document.querySelector("#win").style.display = "block"
+    document.querySelector("#game-over").style.display = "none"
+    document.querySelector("#name-final").innerHTML = inputValue
+    document.querySelector("#score").innerHTML = this.score
+  }
+
+  gameOver = () => {
+    sound_bg.pause();
+    if(!this.gamefinished){
+      playSoundButton("gameover")
+    }
+    this.gamefinished = true;
+    clearInterval(intervalTimer);
+    clearInterval(intervalEnnemies);
+
+    infoCenter.style.display = "block"
+
+    document.querySelector("#win").style.display = "none"
+    document.querySelector("#game-over").style.display = "block"
+  };
+}
+
+class food {
+  constructor(posX, posY) {
+    let imgfoodName;
+    if (myPlayer.type === "cat") {
+      imgfoodName = "catFood.png"
+    }
+    else if (myPlayer.type === "panda") {
+      imgfoodName = "bamboo.png"
+    }
+    const imgFood = new Image();
+    imgFood.src = "images/" + imgfoodName;
+    this.img = imgFood;
+    this.width = 50;
+    this.height = 50;
+    this.posX = posX;
+    this.posY = posY;
+  }
+  drawImage = () => {
+    ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
+    ctx.fill();
+  };
+}
+
+class poop {
+  constructor(posX) {
+    let imgPoop = new Image();
+    imgPoop.src = "images/poopSmile.png";
+    this.imgPoop = imgPoop;
+    this.poopWidth = 20;
+    this.poopHeight = 20;
+    this.poopPosX = posX;
+    this.poopPosY = myPlayer.posY + myPlayer.height - this.poopHeight - 10;
+  }
+}
+
+class ennemy {
+  constructor(ennemyPos, posX, posY) {
+    let imgSrc;
+
+    if (myPlayer.type === "cat") {
+      imgSrc = "cat-ennemy.png"
+    }
+    else if (myPlayer.type === "panda") {
+      imgSrc = "panda-ennemy.png"
+    }
+
+    const imgEnnemy = new Image();
+    imgEnnemy.src = "images/" + imgSrc
+    this.img = imgEnnemy;
+    this.spriteXIndex = 0;
+    this.spriteYIndex = 0;
+    this.naturalWidth = 32;
+    this.naturalHeight = 32;
+    this.width = 50;
+    this.height = 50;
+    this.posX = posX;
+    this.posY = posY;
+    this.direction = "left";
+    this.ennemyPos = ennemyPos
+  }
+
+  goLeft = () => {
+    this.posX -= 4;
+    this.spriteYIndex = 1
+    this.spriteXIndex++
+    if (this.spriteXIndex > 2) {
+      this.spriteXIndex = 0
+    }
+  }
+
+  goRight = () => {
+    this.posX += 4;
+    this.spriteYIndex = 2;
+    this.spriteXIndex++;
+    if (this.spriteXIndex > 2) {
+      this.spriteXIndex = 0
+    }
+  }
+
+  drawImage = () => {
+    ctx.drawImage(
+      this.img,
+      this.naturalWidth * this.spriteXIndex,
+      this.naturalHeight * this.spriteYIndex,
+      this.naturalWidth,
+      this.naturalHeight,
+      this.posX,
+      this.posY,
+      this.width,
+      this.height,
+    )
+    ctx.restore()
+    ctx.fill();
+
+  };
 
 
+  killPlayer = () => {
+    if (this.posY === myPlayer.posY) {
+      if (
+        this.posX + this.width >= myPlayer.posX &&
+        this.posX <= myPlayer.posX + myPlayer.width
+      ) {
+        myPlayer.gameOver();
+      }
+    }
+  }
 
 
+  move = () => {
+    if (this.ennemyPos === "leftHalf") {
+      if (this.direction === "left") {
+        if (this.posX > 0) {
+          this.goLeft()
+        }
+        else { this.direction = "right" }
+      }
+      if (this.direction === "right") {
+        if (this.posX < canvas.width / 2 - this.width) {
+          this.goRight();
+        }
+        else { this.direction = "left" }
+      }
+    }
 
+    else if (this.ennemyPos === "rightHalf") {
+      if (this.direction === "left") {
+        if (this.posX > canvas.width / 2) {
+          this.goLeft();
+        }
+        else { this.direction = "right" }
+      }
+      if (this.direction === "right") {
+        if (this.posX < canvas.width - this.width) {
+          this.goRight();
+        }
+        else { this.direction = "left" }
+      }
+    }
+  }
+
+}
 
 
 const signPoopZoneImg = new Image();
@@ -536,52 +541,84 @@ bgImg.src = "images/background/background.png";
 
 window.onload = () => {
 
+  const initValue = () => {
+    cancelAnimationFrame(animationFrame)
+    intervalTimer = undefined
+    intervalEnnemies = undefined
+    time = 60;
+    myPlayer = undefined
+    myFoods = undefined
+    myEnnemies = undefined
+    inputValue = ""
+
+    document.getElementById("btn-panda").classList.remove('btn-selected');
+    document.getElementById("btn-cat").classList.remove('btn-selected');
+    document.getElementById("name").value = ""
+  }
   // FIRST SCREEN
   screen1.style.display = "block";
   document.getElementById("start-game").onclick = () => {
     screen1.style.display = "none";
+    screen3.style.display = "none";
     screen2.style.display = "block";
+    playSoundButton("button")
+  };
+
+  document.getElementById("btn-try-again").onclick = () => {
+    initValue()
+    screen1.style.display = "none";
+    screen3.style.display = "none";
+    infoCenter.style.display = "none"
+    screen2.style.display = "block";
+    playSoundButton("button")
   };
 
   // SECOND SCREEN
   document.getElementById("submit-player").onclick = () => {
+
     inputValue = input.value
     if (inputValue && myPlayer) {
+      playSoundButton("button")
       screen2.style.display = "none";
       screen3.style.display = "block";
+      document.querySelector(".guidelines").innerHTML
       startGame();
     }
   };
 
   document.getElementById("btn-panda").onclick = () => {
-    console.log("panda")
-
+    playSoundButton("button")
+    document.getElementById("btn-panda").classList.add('btn-selected');
+    document.getElementById("btn-cat").classList.remove('btn-selected');
     myPlayer = new player(arrayPlayer[0].type, arrayPlayer[0].imgPlayerName);
-
-    myFoods = arrayFood.map((element) => {
-      return new food(element.posX, element.posY);
-    });
-    myEnnemies = arrayEnnemy.map((element) => {
-      return new ennemy(element.ennemyPos, element.posX, element.posY)
-    });
-
   }
 
   document.getElementById("btn-cat").onclick = () => {
-    console.log("cat")
+    playSoundButton("button")
+    document.getElementById("btn-cat").classList.add('btn-selected');
+    document.getElementById("btn-panda").classList.remove('btn-selected');
     myPlayer = new player(arrayPlayer[1].type, arrayPlayer[1].imgPlayerName);
-    myFoods = arrayFood.map((element) => {
-      return new food(element.posX, element.posY);
-    });
-    myEnnemies = arrayEnnemy.map((element) => {
-      return new ennemy(element.ennemyPos, element.posX, element.posY)
-    });
   }
 
 
 
   //CANVAS
   const startGame = () => {
+
+    myBlocs = arrayBloc.map((element) => {
+      return new bloc(element.imgName, element.posY);
+    });
+    myFoods = arrayFood.map((element) => {
+      return new food(element.posX, element.posY);
+    });
+    myEnnemies = arrayEnnemy.map((element) => {
+      return new ennemy(element.ennemyPos, element.posX, element.posY)
+    });
+
+    // sound_bg.pause();
+    // sound_bg.currentTime = 0;
+    // sound_bg.play();
+
     animate();
     updateTime = () => {
       if (time > 0) {
@@ -592,7 +629,7 @@ window.onload = () => {
     intervalEnnemies = setInterval(() => {
       myEnnemies.map((element) => { element.move() });
 
-    }, 200);
+    }, 80);
   }
 
   const animate = () => {
@@ -601,8 +638,7 @@ window.onload = () => {
     drawFood();
     drawEnnemy();
     drawTimer();
-    ctx.fillText("Name : " + inputValue, 650, 30);
-    requestAnimationFrame(animate);
+    animationFrame = requestAnimationFrame(animate);
   };
 
   // background
@@ -618,9 +654,8 @@ window.onload = () => {
 
   // création des blocsNiv
   const drawBloc = () => {
-    arrayBloc.forEach((element) => {
-      let myBloc = new bloc(element.imgName, element.posY);
-      myBloc.drawImage();
+    myBlocs.forEach((element) => {
+      element.drawImage();
     });
   };
 
@@ -651,7 +686,7 @@ window.onload = () => {
   };
 
   document.addEventListener("keydown", function (e) {
-    if (!myPlayer.gamefinished) {
+    if (myPlayer && !myPlayer.gamefinished) {
       if (e.key === "ArrowLeft" && myPlayer.posX > 0) {
         myPlayer.goLeft()
       } else if (
@@ -682,10 +717,7 @@ window.onload = () => {
   };
 
   const drawTimer = () => {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#0095DD";
-    ctx.fillText("Time left: " + time, 8, 30);
-    ctx.fill();
+    document.querySelector(".time").innerHTML = time
   };
 
   const drawEnnemy = () => {
