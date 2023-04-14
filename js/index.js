@@ -87,33 +87,33 @@ let arrayFood = [
   },
 ];
 
-let arrayEnnemy = [{
-  ennemyPos: "leftHalf",
+let arrayEnemy = [{
+  enemyPos: "leftHalf",
   posX: Math.floor(Math.random() * ((450 - 50) - 0) + 0),
   posY: arrayBloc[0].posY - 40,
 },
 {
-  ennemyPos: "leftHalf",
+  enemyPos: "leftHalf",
   posX: Math.floor(Math.random() * ((450 - 50) - 0) + 0),
   posY: arrayBloc[2].posY - 40,
 },
 {
-  ennemyPos: "leftHalf",
+  enemyPos: "leftHalf",
   posX: Math.floor(Math.random() * ((450 - 50) - 0) + 0),
   posY: arrayBloc[3].posY - 40,
 },
 {
-  ennemyPos: "rightHalf",
+  enemyPos: "rightHalf",
   posX: Math.floor(Math.random() * ((canvas.width - 50) - 400) + 400),
   posY: arrayBloc[0].posY - 40,
 },
 {
-  ennemyPos: "rightHalf",
+  enemyPos: "rightHalf",
   posX: Math.floor(Math.random() * ((canvas.width - 50) - 400) + 400),
   posY: arrayBloc[2].posY - 40,
 },
 {
-  ennemyPos: "rightHalf",
+  enemyPos: "rightHalf",
   posX: Math.floor(Math.random() * ((canvas.width - 50) - 400) + 400),
   posY: arrayBloc[3].posY - 40,
 },
@@ -421,20 +421,20 @@ class poop {
   }
 }
 
-class ennemy {
-  constructor(ennemyPos, posX, posY) {
+class enemy {
+  constructor(enemyPos, posX, posY) {
     let imgSrc;
 
     if (myPlayer.type === "cat") {
-      imgSrc = "cat-ennemy.png"
+      imgSrc = "cat-enemy.png"
     }
     else if (myPlayer.type === "panda") {
-      imgSrc = "panda-ennemy.png"
+      imgSrc = "panda-enemy.png"
     }
 
-    const imgEnnemy = new Image();
-    imgEnnemy.src = "images/" + imgSrc
-    this.img = imgEnnemy;
+    const imgEnemy = new Image();
+    imgEnemy.src = "images/" + imgSrc
+    this.img = imgEnemy;
     this.spriteXIndex = 0;
     this.spriteYIndex = 0;
     this.naturalWidth = 32;
@@ -444,7 +444,7 @@ class ennemy {
     this.posX = posX;
     this.posY = posY;
     this.direction = "left";
-    this.ennemyPos = ennemyPos
+    this.enemyPos = enemyPos
   }
 
   goLeft = () => {
@@ -496,7 +496,7 @@ class ennemy {
 
 
   move = () => {
-    if (this.ennemyPos === "leftHalf") {
+    if (this.enemyPos === "leftHalf") {
       if (this.direction === "left") {
         if (this.posX > 0) {
           this.goLeft()
@@ -511,7 +511,7 @@ class ennemy {
       }
     }
 
-    else if (this.ennemyPos === "rightHalf") {
+    else if (this.enemyPos === "rightHalf") {
       if (this.direction === "left") {
         if (this.posX > canvas.width / 2) {
           this.goLeft();
@@ -611,8 +611,8 @@ window.onload = () => {
     myFoods = arrayFood.map((element) => {
       return new food(element.posX, element.posY);
     });
-    myEnnemies = arrayEnnemy.map((element) => {
-      return new ennemy(element.ennemyPos, element.posX, element.posY)
+    myEnnemies = arrayEnemy.map((element) => {
+      return new enemy(element.enemyPos, element.posX, element.posY)
     });
 
     // sound_bg.pause();
@@ -636,7 +636,7 @@ window.onload = () => {
     drawEntireBackground();
     drawPlayer();
     drawFood();
-    drawEnnemy();
+    drawEnemy();
     drawTimer();
     animationFrame = requestAnimationFrame(animate);
   };
@@ -720,7 +720,7 @@ window.onload = () => {
     document.querySelector(".time").innerHTML = time
   };
 
-  const drawEnnemy = () => {
+  const drawEnemy = () => {
     myEnnemies.forEach((element) => {
       element.drawImage();
       element.killPlayer();
