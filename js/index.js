@@ -383,6 +383,7 @@ class player {
 
     document.querySelector("#win").style.display = "none"
     document.querySelector("#game-over").style.display = "block"
+    document.querySelector("#name-final-lose").innerHTML = inputValue
   };
 }
 
