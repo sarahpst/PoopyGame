@@ -1,6 +1,6 @@
 # Project's name
 
-[Click here to see deployed game](https://sarahpst.github.io/game/)
+[Click here to see deployed game](https://sarahpst.github.io/PoopyGame/)
 
 ## Description
 
